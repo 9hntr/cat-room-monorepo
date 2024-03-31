@@ -16,7 +16,7 @@ import {
 } from "../state/room.reducer";
 import { useEffect } from "react";
 
-export const socket = io("http://localhost:3000");
+export const socket = io("https://cat-room-core.vercel.app/");
 
 const createUser = (data: {
   roomName: string;
