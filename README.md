@@ -1,5 +1,7 @@
 # Monorepo virtual chat room
 
+![](https://github.com/sorrowintogold/cat-room-monorepo/tree/main/apps/ui/public/ezgif-5-86ea25567c.gif)
+
 Run development
 
 ```sh
