@@ -3,6 +3,8 @@ export type MessageT = {
   message: string;
 };
 
+export type Todo = {};
+
 type CoordinatesT = {
   row: number;
   col: number;

@@ -1,12 +1,12 @@
-import { findPath } from "./libs";
+import { findPath } from "./common";
 
 // types
 import { PositionI, RoomData, XAxis } from "./types";
 export const gridSize: number = 10;
 
-import { RoomHandler, speedUserMov } from "./room";
+import { speedUserMov } from "./room";
 
-const roomHdl = new RoomHandler();
+import { roomHdl } from "./server";
 
 export const handleConnections = (socket: any, io: any) => {
   console.log("A user connected");
@@ -116,14 +116,12 @@ export const handleConnections = (socket: any, io: any) => {
   });
 
   socket.on("message", ({ message, socketId }) => {
-    // ! todo: check ignore list before sending message
-
-    // todo: fix sending message twice
     [socket.id, socketId].forEach((target: string) => {
       io.to(target).emit("message", { message, userId: socket.id });
     });
   });
 
+  // todo: remove this and use api req
   socket.on("getRoomList", () => {
     io.emit("updateRoomList", {
       rooms: Array.from(roomHdl.rooms, ([roomId, roomData]) => ({

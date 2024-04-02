@@ -3,7 +3,7 @@ import http from "http";
 import cors from "cors";
 import { Server } from "socket.io";
 import { createClient } from "redis";
-import { createAdapter } from "@socket.io/redis-adapter";
+import { createAdapter } from "@socket.io/redis-streams-adapter";
 import "dotenv/config";
 
 // multi threading
@@ -13,12 +13,24 @@ const { setupPrimary } = require("@socket.io/cluster-adapter");
 
 // ws
 import { handleConnections } from "./wsHandler";
+import { RoomHandler } from "./room";
+
+import roomRoutes from "./routes/room";
 
 const PORT = 3000;
+const wsMaxDisconnectionDurationSecs = 30;
+
+// global chat rooms hdlr
+export const roomHdl = new RoomHandler();
+
+const corsOptions = {
+  origin: process.env.CLIENT_URL,
+  methods: ["GET", "POST"],
+};
 
 if (cluster.isPrimary) {
-  let numCPUs = 1; // availableParallelism();
-  numCPUs = numCPUs > 1 ? numCPUs / 2 : 1;
+  let numCPUs =
+    process.env.NODE_ENV === "development" ? 1 : availableParallelism();
 
   // create one worker per available core
   for (let i = 0; i < numCPUs; i++) {
@@ -33,20 +45,23 @@ if (cluster.isPrimary) {
     const app = express();
     const server = http.createServer(app);
 
-    const pubClient = createClient({
+    const redisClient = createClient({
       url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
       password: process.env.REDIS_PASSWORD,
     });
-    const subClient = pubClient.duplicate();
 
-    await Promise.all([pubClient.connect(), subClient.connect()]);
+    await redisClient.connect();
 
     const io = new Server(server, {
-      cors: { origin: process.env.UI_URL, methods: ["GET", "POST"] },
-      adapter: createAdapter(pubClient, subClient), // * set up an adapter on each worker thread
+      connectionStateRecovery: {
+        maxDisconnectionDuration: wsMaxDisconnectionDurationSecs * 1000,
+      },
+      cors: corsOptions,
+      adapter: createAdapter(redisClient), // * set up an adapter on each worker thread
     });
 
-    app.use(cors());
+    app.use(cors(corsOptions));
+    app.use("/rooms", roomRoutes);
 
     io.on("connection", (socket) => handleConnections(socket, io));
 

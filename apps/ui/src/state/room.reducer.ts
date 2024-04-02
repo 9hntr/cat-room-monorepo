@@ -52,7 +52,7 @@ export const userSlice = createSlice({
         (user) => user.userId !== action.payload
       );
     },
-    setRoomList: (state, action: PayloadAction<any>) => {
+    setRooms: (state, action: PayloadAction<any>) => {
       state.rooms = action.payload;
     },
     setTarget: (state, action: PayloadAction<any>) => {
@@ -75,10 +75,9 @@ export const userSlice = createSlice({
 
 export const {
   setGridSize,
-  setUser,
   setUsers,
   removeUserById,
-  setRoomList,
+  setRooms,
   setTarget,
   muteUnmuteUser,
   addMessage,
@@ -90,5 +89,6 @@ export const selectGridSize = (state: RootState) => state.room.gridSize;
 export const selectUser = (state: RootState) => state.room.currentUserData;
 export const selectTarget = (state: RootState) => state.room.target;
 export const selectMuteUsers = (state: RootState) => state.room.muteUsers;
+export const selectRooms = (state: RootState) => state.room.rooms;
 
 export default userSlice.reducer;

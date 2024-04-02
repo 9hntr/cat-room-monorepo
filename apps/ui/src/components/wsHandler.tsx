@@ -9,12 +9,13 @@ import {
   setGridSize,
   setUsers,
   removeUserById,
-  setRoomList,
   addMessage,
 } from "../state/room.reducer";
 import { useEffect } from "react";
 
-export const socket = io("https://cat-room-core.onrender.com"); // "http://localhost:3000"
+export const socket = io(import.meta.env.VITE_SERVER_URL, {
+  transports: ["websocket"],
+});
 
 export const createUser = (data: {
   roomName: string;
@@ -30,8 +31,6 @@ export const sendMessageTo = (message: string, socketId: string) => {
 
 export const updatePlayerPosition = (data: { row: number; col: number }) =>
   socket.emit("updatePlayerPosition", data);
-
-export const getRoomList = () => socket.emit("getRoomList");
 
 const SocketHandler = () => {
   const dispatch = useDispatch();
@@ -51,10 +50,6 @@ const SocketHandler = () => {
 
     socket.on("updateMap", (data) => {
       dispatch(setUsers(data?.players)); // ! si no metemos la lista completa de users no funciona wtf
-    });
-
-    socket.on("updateRoomList", (data) => {
-      dispatch(setRoomList(data?.rooms));
     });
 
     socket.on("userCreated", (users) => {

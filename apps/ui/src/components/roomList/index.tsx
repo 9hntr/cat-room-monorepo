@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createUser, getRoomList } from "../wsHandler";
+import { createUser } from "../wsHandler";
+import { fetchRooms } from "../../api-hooks";
 
-import { setTarget } from "../../state/room.reducer";
+import { setTarget, selectRooms, setRooms } from "../../state/room.reducer";
 
 const RoomList = ({ isOpen, onClose }: { isOpen: boolean; onClose: any }) => {
   const dispatch = useDispatch();
-  const rooms = useSelector((state: any) => state.room.rooms);
+  const [fetchRoomsLoading, setFetchRoomsLoading] = useState<boolean>(true);
+  const rooms = useSelector(selectRooms);
   const [roomName, setRoomName] = useState("room1");
   const [userName, setUsername] = useState(
     `kitty${Math.floor(Math.random() * 100)}`
@@ -37,7 +39,13 @@ const RoomList = ({ isOpen, onClose }: { isOpen: boolean; onClose: any }) => {
   };
 
   useEffect(() => {
-    getRoomList();
+    (async function () {
+      setFetchRoomsLoading(true);
+      const data = await fetchRooms();
+
+      dispatch(setRooms(data));
+      setFetchRoomsLoading(false);
+    })();
   }, []);
 
   return (
@@ -51,7 +59,11 @@ const RoomList = ({ isOpen, onClose }: { isOpen: boolean; onClose: any }) => {
         <div className="bg-white p-4 rounded shadow w-auto">
           <h2 className="text-xl font-bold mb-4 text-center">Lobby</h2>
 
-          {rooms.length > 0 ? (
+          {fetchRoomsLoading && (
+            <p className="text-center">Fetching rooms...</p>
+          )}
+
+          {rooms?.length > 0 ? (
             <table className="w-full">
               <thead>
                 <tr>
@@ -73,7 +85,9 @@ const RoomList = ({ isOpen, onClose }: { isOpen: boolean; onClose: any }) => {
                 ))}
               </tbody>
             </table>
-          ) : (
+          ) : null}
+
+          {!fetchRoomsLoading && !rooms.length && (
             <p className="text-center">No rooms available.</p>
           )}
 
@@ -143,7 +157,6 @@ const RoomList = ({ isOpen, onClose }: { isOpen: boolean; onClose: any }) => {
         </div>
       )}
 
-      {/* este boton debe mostrarse con la condicion de que ya pertenezca a una sala */}
       {/* <button className="text-black px-4 py-2 rounded mt-4" onClick={onClose}>
           Close
         </button> */}
