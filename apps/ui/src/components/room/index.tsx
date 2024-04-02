@@ -5,7 +5,7 @@ import Chat from "@/components/chat";
 import UserCharacter from "../userCharacter";
 import RoomList from "../roomList";
 
-import { socket } from "../wsHandler";
+import { updatePlayerPosition } from "../wsHandler";
 
 // state management
 import { useSelector } from "react-redux";
@@ -36,7 +36,7 @@ const Room: React.FC<any> = () => {
   const handleCharacterMovement = (row: number, col: number) => {
     if (!isMovementAllowed(row, col)) return;
 
-    socket.emit("updatePlayerPosition", { row, col }); // * recognized user by socket.id
+    updatePlayerPosition({ row, col });
   };
 
   const renderCells = (): React.ReactElement[] => {

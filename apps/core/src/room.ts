@@ -107,8 +107,6 @@ export class RoomHandler {
 
       this.rooms.set(roomId, roomData);
     }
-
-    return newUser;
   }
 
   removeUser(userId: string, roomId: string) {

@@ -10,6 +10,11 @@ type UserMessageI = {
   message: string;
 };
 
+type Target = {
+  username: string | null;
+  id: string;
+};
+
 // Define a type for the slice state
 interface UsersState {
   gridSize: number;
@@ -17,7 +22,8 @@ interface UsersState {
   usersData: PlayerI[];
   rooms: any[];
   messages: any;
-  currentRoom: string | null;
+  target: Target;
+  muteUsers: string[];
 }
 
 // Define the initial state using that type
@@ -26,8 +32,9 @@ const initialState: UsersState = {
   currentUserData: null,
   usersData: [],
   rooms: [],
-  currentRoom: null,
+  target: { username: null, id: "" },
   messages: {},
+  muteUsers: [],
 };
 
 export const userSlice = createSlice({
@@ -36,9 +43,6 @@ export const userSlice = createSlice({
   reducers: {
     setGridSize: (state, action: PayloadAction<number>) => {
       state.gridSize = action.payload;
-    },
-    setUser: (state, action: PayloadAction<PlayerI>) => {
-      state.currentUserData = action.payload;
     },
     setUsers: (state, action: PayloadAction<PlayerI[]>) => {
       state.usersData = action.payload;
@@ -51,8 +55,8 @@ export const userSlice = createSlice({
     setRoomList: (state, action: PayloadAction<any>) => {
       state.rooms = action.payload;
     },
-    setCurrentRoom: (state, action: PayloadAction<any>) => {
-      state.currentRoom = action.payload;
+    setTarget: (state, action: PayloadAction<any>) => {
+      state.target = action.payload;
     },
     addMessage: (state, action: PayloadAction<UserMessageI>) => {
       const { userId, message } = action.payload;
@@ -60,6 +64,11 @@ export const userSlice = createSlice({
     },
     userCleanMessage: (state, action) => {
       state.messages[action.payload] = "";
+    },
+    muteUnmuteUser: (state, action) => {
+      if (state.muteUsers.includes(action.payload)) {
+        state.muteUsers = state.muteUsers.filter((id) => id !== action.payload);
+      } else state.muteUsers.push(action.payload);
     },
   },
 });
@@ -70,7 +79,8 @@ export const {
   setUsers,
   removeUserById,
   setRoomList,
-  setCurrentRoom,
+  setTarget,
+  muteUnmuteUser,
   addMessage,
   userCleanMessage,
 } = userSlice.actions;
@@ -78,5 +88,7 @@ export const {
 export const selectPlayers = (state: RootState) => state.room.usersData;
 export const selectGridSize = (state: RootState) => state.room.gridSize;
 export const selectUser = (state: RootState) => state.room.currentUserData;
+export const selectTarget = (state: RootState) => state.room.target;
+export const selectMuteUsers = (state: RootState) => state.room.muteUsers;
 
 export default userSlice.reducer;

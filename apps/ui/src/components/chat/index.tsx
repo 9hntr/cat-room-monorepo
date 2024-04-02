@@ -1,37 +1,53 @@
 import React, { useState } from "react";
-import { socket } from "../wsHandler";
+import { sendMessageTo } from "../wsHandler";
+import { useDispatch, useSelector } from "react-redux";
+import { selectTarget, selectUser, setTarget } from "../../state/room.reducer";
 
 const Chat: React.FC<any> = () => {
-  const [newMessage, setNewMessage] = useState<string>("");
+  const dispatch = useDispatch();
+  const [message, setMessage] = useState<string>("");
+  const target = useSelector(selectTarget);
+  const user = useSelector(selectUser);
 
   const sendMessage = (event: any) => {
     event.preventDefault();
-    if (!newMessage) return;
+    if (!message) return;
 
-    socket.emit("message", newMessage);
-    setNewMessage("");
+    sendMessageTo(message, target?.id as string);
+    setMessage("");
+  };
+
+  const hdlKeyDown = (key: string) => {
+    if (!message.length && key === "Backspace") {
+      dispatch(setTarget({ username: null, id: user?.roomId }));
+    }
   };
 
   return (
     <React.Fragment>
       <form className="mt-1" onSubmit={sendMessage}>
-        <div className="relative flex">
+        <div className="relative flex w-full focus:outline-none focus:placeholder-gray-400 bg-white rounded-md py-2">
+          {target.id !== user?.roomId ? (
+            <span className="text-bold text-gray-400 ml-3 flex justify-center items-center">
+              {target.username}
+            </span>
+          ) : null}
+
           <input
             type="text"
             placeholder="Type your message..."
-            value={newMessage}
+            value={message}
             maxLength={20}
-            className="w-full focus:outline-none focus:placeholder-gray-400 text-gray-600 placeholder-gray-600 pl-6 bg-gray-200 rounded-md py-3"
-            onChange={(event) => setNewMessage(event.target.value)}
+            className="text-gray-600 placeholder-gray-600 w-full ml-3 outline-none"
+            onChange={(event) => setMessage(event.target.value)}
+            onKeyDown={(e) => hdlKeyDown(e.key)}
           />
-          <div className="absolute right-0 items-center inset-y-0 hidden sm:flex">
-            <button
-              type="submit"
-              className="inline-flex items-center justify-center rounded-lg px-4 py-3 text-aldebaran focus:outline-none font-bold"
-            >
-              Send
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="flex items-center justify-center rounded-lg px-4 py-1 text-aldebaran font-bold"
+          >
+            Send
+          </button>
         </div>
       </form>
     </React.Fragment>

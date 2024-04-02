@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { socket } from "../wsHandler";
+import { createUser, getRoomList } from "../wsHandler";
 
-import { setCurrentRoom } from "../../state/room.reducer";
+import { setTarget } from "../../state/room.reducer";
 
 const RoomList = ({ isOpen, onClose }: { isOpen: boolean; onClose: any }) => {
   const dispatch = useDispatch();
@@ -24,7 +24,7 @@ const RoomList = ({ isOpen, onClose }: { isOpen: boolean; onClose: any }) => {
 
   // step 1
   const handleSelectRoom = (rId: string) => {
-    dispatch(setCurrentRoom(rId));
+    dispatch(setTarget({ username: null, id: rId }));
     setRoomName(rId);
     setStep(2);
   };
@@ -32,12 +32,12 @@ const RoomList = ({ isOpen, onClose }: { isOpen: boolean; onClose: any }) => {
   // step 2
   const handleSelectName = (e: any) => {
     e.preventDefault();
-    socket.emit("userCreation", { roomName, userName, avatarId });
+    createUser({ roomName, userName, avatarId });
     onClose();
   };
 
   useEffect(() => {
-    socket.emit("getRoomList");
+    getRoomList();
   }, []);
 
   return (
@@ -48,65 +48,64 @@ const RoomList = ({ isOpen, onClose }: { isOpen: boolean; onClose: any }) => {
     >
       {/* Step 1 - Room creation/selection */}
       {step === 1 && (
-        <div className="bg-white p-4 rounded shadow lg:w-1/5 md:w-2/5 w-3/5">
+        <div className="bg-white p-4 rounded shadow w-auto">
           <h2 className="text-xl font-bold mb-4 text-center">Lobby</h2>
 
-          <div className="pr-4 pl-4 pb-4">
-            {rooms.length > 0 ? (
-              <table className="w-full">
-                <thead>
-                  <tr>
-                    <th className="py-2 px-4 text-left">Rooms online</th>
-                    <th className="py-2 px-4 text-left">Cats</th>
+          {rooms.length > 0 ? (
+            <table className="w-full">
+              <thead>
+                <tr>
+                  <th className="py-2 px-4 text-left">Rooms online</th>
+                  <th className="py-2 px-4 text-left">Cats</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rooms.map((room: any, idx: number) => (
+                  <tr key={idx}>
+                    <td
+                      onClick={() => handleSelectRoom(room.title)}
+                      className="py-2 px-4 text-aldebaran hover:text-black cursor-pointer"
+                    >
+                      {room.title}
+                    </td>
+                    <td className="py-2 px-4">{room.numCats}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {rooms.map((room: any, idx: number) => (
-                    <tr key={idx}>
-                      <td
-                        onClick={() => handleSelectRoom(room.title)}
-                        className="py-2 px-4 text-aldebaran hover:text-black cursor-pointer"
-                      >
-                        {room.title}
-                      </td>
-                      <td className="py-2 px-4">{room.numCats}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p>No rooms available.</p>
-            )}
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="text-center">No rooms available.</p>
+          )}
 
-            <div className="flex mt-6">
-              <input
-                className="px-4 py-2 border border-gray-100 flex-initial w-4/5"
-                type="text"
-                placeholder="Name your room"
-                onChange={({ target }) => setRoomName(target.value)}
-                value={roomName}
-              />
-              <button
-                className="px-4 py-2 flex-shrink-0 bg-aldebaran text-white"
-                onClick={() => handleSelectRoom(roomName)}
-              >
-                Create Room
-              </button>
-            </div>
+          <div className="flex mt-6 w-auto">
+            <input
+              className="px-4 py-2 mr-3 outline-none border border-gray-200"
+              type="text"
+              placeholder="Name your room"
+              onChange={({ target }) => setRoomName(target.value)}
+              value={roomName}
+            />
+            <button
+              className="px-4 py-2 flex-shrink-0 bg-aldebaran text-white"
+              onClick={() => handleSelectRoom(roomName)}
+            >
+              Create Room
+            </button>
           </div>
         </div>
       )}
 
       {/* Step 2 - Username selection */}
       {step === 2 && (
-        <div className="bg-white p-4 rounded shadow lg:w-1/5 md:w-2/5 w-3/5">
+        <div className="bg-white p-4 rounded shadow w-auto">
           <h2 className="text-xl font-bold mb-4 text-center">
             Enter your name
           </h2>
 
-          <form className="pr-4 pl-4 pb-4 flex" onSubmit={handleSelectName}>
+          <form className="pb-4 flex" onSubmit={handleSelectName}>
             <input
               type="text"
+              className="w-full mr-3 outline-none border-2 border-gray-200 pl-2"
               value={userName}
               onChange={({ target }) => setUsername(target.value)}
             />
@@ -132,7 +131,11 @@ const RoomList = ({ isOpen, onClose }: { isOpen: boolean; onClose: any }) => {
                   onClick={() => setAvatarId(buttons[idx].id)}
                   className={className}
                 >
-                  <img src={button.url} className="w-8 h-8" alt="" />
+                  <img
+                    src={button.url}
+                    className="lg:w-[30px] lg:h-[30px] w-[40px] h-[40px]"
+                    alt=""
+                  />
                 </button>
               );
             })}

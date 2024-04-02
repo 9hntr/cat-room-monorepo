@@ -1,6 +1,6 @@
 import io from "socket.io-client";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 // types
 import { MessageT } from "../types";
@@ -9,16 +9,14 @@ import {
   setGridSize,
   setUsers,
   removeUserById,
-  selectUser,
-  setUser,
   setRoomList,
   addMessage,
 } from "../state/room.reducer";
 import { useEffect } from "react";
 
-export const socket = io("https://cat-room-core.onrender.com");
+export const socket = io("https://cat-room-core.onrender.com"); // "http://localhost:3000"
 
-const createUser = (data: {
+export const createUser = (data: {
   roomName: string;
   userName: string;
   avatarId: number;
@@ -26,9 +24,17 @@ const createUser = (data: {
   socket.emit("userCreation", data);
 };
 
+export const sendMessageTo = (message: string, socketId: string) => {
+  socket.emit("message", { message, socketId });
+};
+
+export const updatePlayerPosition = (data: { row: number; col: number }) =>
+  socket.emit("updatePlayerPosition", data);
+
+export const getRoomList = () => socket.emit("getRoomList");
+
 const SocketHandler = () => {
   const dispatch = useDispatch();
-  const user = useSelector(selectUser);
 
   useEffect(() => {
     socket.on("initMap", (data) => {
@@ -51,12 +57,8 @@ const SocketHandler = () => {
       dispatch(setRoomList(data?.rooms));
     });
 
-    socket.on("userCreated", ({ newUser, _players }) => {
-      if (!user) {
-        dispatch(setUser(newUser));
-      }
-
-      dispatch(setUsers(_players)); // ! todo: busca como arreglar luego wtf 2
+    socket.on("userCreated", (users) => {
+      dispatch(setUsers(users)); // ! todo: busca como arreglar luego wtf 2
     });
 
     socket.on("message", ({ message, userId }: MessageT) => {

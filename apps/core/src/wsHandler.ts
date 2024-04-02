@@ -29,19 +29,11 @@ export const handleConnections = (socket: any, io: any) => {
         return;
       }
 
-      const userData = roomHdl.createUser(
-        socket.id,
-        roomName,
-        userName,
-        avatarId
-      );
+      roomHdl.createUser(socket.id, roomName, userName, avatarId);
 
       socket.join(roomName);
       io.to(roomName).emit("initMap", { gridSize });
-      io.to(roomName).emit("userCreated", {
-        newUser: userData,
-        _players: roomHdl.rooms.get(roomName).users,
-      });
+      io.to(roomName).emit("userCreated", roomHdl.rooms.get(roomName).users);
     }
   );
 
@@ -123,9 +115,13 @@ export const handleConnections = (socket: any, io: any) => {
     roomHdl.rooms.set(roomId, room); // ! actually updates room
   });
 
-  socket.on("message", (message) => {
-    const roomId = Array.from(socket.rooms)[1];
-    io.to(roomId).emit("message", { message, userId: socket.id });
+  socket.on("message", ({ message, socketId }) => {
+    // ! todo: check ignore list before sending message
+
+    // todo: fix sending message twice
+    [socket.id, socketId].forEach((target: string) => {
+      io.to(target).emit("message", { message, userId: socket.id });
+    });
   });
 
   socket.on("getRoomList", () => {
