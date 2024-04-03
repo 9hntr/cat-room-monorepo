@@ -12,6 +12,8 @@ import {
 import { useClickAway } from "../../common/hooks";
 import { socket, updatePlayerDirection } from "../wsHandler";
 
+import { inputChatMessage } from "../chat";
+
 const UserCharacter = ({
   avatar,
   userId,
@@ -55,6 +57,8 @@ const UserCharacter = ({
 
   const hdlTargetSelection = () => {
     dispatch(setTarget({ username: userName, id: userId }));
+    // @ts-ignore
+    inputChatMessage.current.focus();
     closeContextMenu();
   };
 
@@ -80,13 +84,13 @@ const UserCharacter = ({
   return (
     <>
       <div
-        className="relative w-full h-full"
+        className="flex items-center justify-center relative w-full h-full"
         onContextMenu={handleContextMenu}
         onClick={handleAvatarDirection}
       >
         {message && !muteUsers.includes(userId) ? (
-          <div className="w-0 absolute">
-            <span className="bubble">{message}</span>
+          <div className="w-0 absolute mt-[-135px] ml-[-20px] z-20">
+            <span className="bubble min-w-[4em]">{message}</span>
           </div>
         ) : null}
         <img
@@ -96,12 +100,14 @@ const UserCharacter = ({
         <span className="text-xs text-white font-custom absolute mt-[32px] select-none">
           {userName}
         </span>
+        {/* <div className="h-12 w-12 rounded-full bg-gray-500 shadow"></div>
+        <div className="absolute h-12 w-12 rounded-full bg-gray-800 opacity-50 top-2 left-2"></div> */}
       </div>
 
       {contextMenu?.open ? (
         <div
           ref={contextMenuRef}
-          className="rounded-md bg-white py-2 px-4 ml-[100px] absolute z-20"
+          className="rounded-md bg-white py-2 px-4 ml-[55px] mt-[-60px] absolute z-20"
         >
           <ul className="text-center">
             <li className="text-aldebaran text-xs font-bold select-none">

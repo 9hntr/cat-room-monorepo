@@ -1,5 +1,7 @@
-import { RoomHandler, avatars } from "../room";
+import { RoomHandler } from "../room";
 import { RoomData, XAxis } from "../types";
+
+import { avatars } from "../data";
 
 const mockRooms = new RoomHandler();
 

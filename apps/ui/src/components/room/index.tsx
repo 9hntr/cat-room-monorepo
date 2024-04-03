@@ -51,7 +51,7 @@ const Room: React.FC<any> = () => {
           <div
             key={`${row}-${col}`}
             onClick={() => handleCharacterMovement(row, col)}
-            className="border-solid border border-white hover:border-isabella"
+            className=" hover:border-isabella"
           >
             {player && (
               <UserCharacter
@@ -70,11 +70,16 @@ const Room: React.FC<any> = () => {
 
   return (
     <React.Fragment>
-      <div className="flex flex-col items-center bg-aldebaran">
-        <div className="gridMap grid grid-cols-10 grid-rows-10 w-80v h-70v">
-          {players.length ? renderCells() : null}
-        </div>
+      <div className="h-70v">
+        {players.length ? (
+          <div className="border-solid border border-white rounded-t-lg flex flex-col items-center bg-aldebaran">
+            <div className="grid grid-cols-10 grid-rows-10 w-80v h-70v">
+              {renderCells()}
+            </div>
+          </div>
+        ) : null}
       </div>
+
       {/* <button
         className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
         onClick={openModal}

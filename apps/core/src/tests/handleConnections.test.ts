@@ -1,7 +1,9 @@
 import { handleConnections, gridSize } from "../wsHandler";
-import { avatars, speedUserMov } from "../room";
+import { speedUserMov } from "../room";
 
 import { XAxis } from "../types";
+import { sleep } from "../common";
+import { avatars } from "../data";
 
 const socketMock = {
   id: "socketId",
@@ -20,10 +22,6 @@ const user = {
   roomName: "room1",
   userName: "user1",
   avatarId: 1,
-};
-
-const sleep = (ms: number) => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
 handleConnections(socketMock, ioMock);

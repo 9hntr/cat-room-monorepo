@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { createRef, useState } from "react";
 import { sendMessageTo } from "../wsHandler";
 import { useDispatch, useSelector } from "react-redux";
 import { selectTarget, selectUser, setTarget } from "../../state/room.reducer";
+
+export const inputChatMessage = createRef<any>();
 
 const Chat: React.FC<any> = () => {
   const dispatch = useDispatch();
@@ -20,13 +22,15 @@ const Chat: React.FC<any> = () => {
   const hdlKeyDown = (key: string) => {
     if (!message.length && key === "Backspace") {
       dispatch(setTarget({ username: null, id: user?.roomId }));
+      // @ts-ignore
+      inputChatMessage.current.focus();
     }
   };
 
   return (
     <React.Fragment>
       <form className="mt-1" onSubmit={sendMessage}>
-        <div className="relative flex w-full focus:outline-none focus:placeholder-gray-400 bg-white rounded-md py-2">
+        <div className="relative flex w-full focus:outline-none focus:placeholder-gray-400 bg-white rounded-b-lg py-2">
           {target.id !== user?.roomId ? (
             <span className="text-bold text-gray-400 ml-3 flex justify-center items-center">
               {target.username}
@@ -35,9 +39,11 @@ const Chat: React.FC<any> = () => {
 
           <input
             type="text"
+            ref={inputChatMessage}
+            autoFocus
             placeholder="Type your message..."
             value={message}
-            maxLength={20}
+            maxLength={60}
             className="text-gray-600 placeholder-gray-600 w-full ml-3 outline-none"
             onChange={(event) => setMessage(event.target.value)}
             onKeyDown={(e) => hdlKeyDown(e.key)}
