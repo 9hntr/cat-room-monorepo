@@ -1,6 +1,5 @@
 const express = require("express");
-import { sleep } from "../common";
-import { roomHdl } from "../server";
+import { roomHdl } from "../wsHandler";
 const router = express.Router();
 
 router.get("/get", async (req, res) => {

@@ -5,7 +5,7 @@ export type MessageT = {
 
 export type Todo = {};
 
-type CoordinatesT = {
+export type CoordinatesT = {
   row: number;
   col: number;
 };

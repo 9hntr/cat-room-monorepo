@@ -5,7 +5,7 @@ import { fetchRooms } from "../../api-hooks";
 
 import { setTarget, selectRooms, setRooms } from "../../state/room.reducer";
 
-const RoomList = ({ isOpen, onClose }: { isOpen: boolean; onClose: any }) => {
+const Lobby = ({ isOpen, onClose }: { isOpen: boolean; onClose: any }) => {
   const dispatch = useDispatch();
   const [fetchRoomsLoading, setFetchRoomsLoading] = useState<boolean>(true);
   const rooms = useSelector(selectRooms);
@@ -164,4 +164,4 @@ const RoomList = ({ isOpen, onClose }: { isOpen: boolean; onClose: any }) => {
   );
 };
 
-export default RoomList;
+export default Lobby;

@@ -3,8 +3,6 @@ import { Todo } from "../types";
 
 const baseURL = import.meta.env.VITE_SERVER_URL;
 
-console.log("baseURL", baseURL);
-
 const cfg = { baseURL };
 
 export const ctx = axios.create(cfg);

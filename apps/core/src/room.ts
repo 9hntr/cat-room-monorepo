@@ -56,7 +56,7 @@ export class RoomHandler {
     roomId: string,
     userName: string,
     avatarId: number
-  ) {
+  ): void {
     const roomData = this.rooms.get(roomId);
     let newPosition = [0, 0]; // * initial position if no players in the room
 
@@ -109,7 +109,7 @@ export class RoomHandler {
     }
   }
 
-  removeUser(userId: string, roomId: string) {
+  removeUser(userId: string, roomId: string): void {
     const roomData: RoomData = this.rooms.get(roomId);
     if (!roomData) return;
 

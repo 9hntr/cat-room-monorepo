@@ -3,7 +3,7 @@ import React, { useState } from "react";
 // components
 import Chat from "@/components/chat";
 import UserCharacter from "../userCharacter";
-import RoomList from "../roomList";
+import Lobby from "../lobby";
 
 import { updatePlayerPosition } from "../wsHandler";
 
@@ -14,7 +14,8 @@ import { selectGridSize, selectPlayers } from "../../state/room.reducer";
 const Room: React.FC<any> = () => {
   const gridSize = useSelector(selectGridSize);
   const players = useSelector(selectPlayers);
-  const [modalOpen, setModalOpen] = useState(true);
+  const [modalOpen, setModalOpen] = useState<boolean>(true);
+  const [allowedMovement, setAllowedMovement] = useState<boolean>(true);
 
   const openModal = () => {
     setModalOpen(true);
@@ -24,19 +25,17 @@ const Room: React.FC<any> = () => {
     setModalOpen(false);
   };
 
-  const isMovementAllowed = (row: number, col: number): boolean => {
+  const handleCharacterMovement = (row: number, col: number) => {
+    if (!allowedMovement) return;
+
     // colisión con otros usuarios
     for (const { position } of players) {
       if (position.col === col && position.row === row) return false;
     }
 
-    return true;
-  };
-
-  const handleCharacterMovement = (row: number, col: number) => {
-    if (!isMovementAllowed(row, col)) return;
-
+    setAllowedMovement(false);
     updatePlayerPosition({ row, col });
+    setTimeout(() => setAllowedMovement(true), 500);
   };
 
   const renderCells = (): React.ReactElement[] => {
@@ -82,7 +81,7 @@ const Room: React.FC<any> = () => {
       >
         Open Modal
       </button> */}
-      <RoomList isOpen={modalOpen} onClose={closeModal} />
+      <Lobby isOpen={modalOpen} onClose={closeModal} />
       {players.length ? <Chat /> : null}
     </React.Fragment>
   );

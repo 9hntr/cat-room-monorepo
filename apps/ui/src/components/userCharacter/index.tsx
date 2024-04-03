@@ -6,9 +6,11 @@ import {
   userCleanMessage,
   selectMuteUsers,
   muteUnmuteUser,
+  selectUserById,
+  selectUser,
 } from "../../state/room.reducer";
 import { useClickAway } from "../../common/hooks";
-import { socket } from "../wsHandler";
+import { socket, updatePlayerDirection } from "../wsHandler";
 
 const UserCharacter = ({
   avatar,
@@ -21,6 +23,8 @@ const UserCharacter = ({
 }) => {
   const dispatch = useDispatch();
   const contextMenuRef = useRef(null);
+  const currentUser = useSelector(selectUser);
+  const user = selectUserById(userId);
   const muteUsers = useSelector(selectMuteUsers);
   const message = useSelector((state: any) => state.room.messages[userId]);
   const messageDurationSecs: number = 7;
@@ -66,11 +70,20 @@ const UserCharacter = ({
     });
   };
 
+  const handleAvatarDirection = () => {
+    if (user && userId !== currentUser?.userId)
+      updatePlayerDirection(user.position);
+  };
+
   useClickAway(contextMenuRef, closeContextMenu);
 
   return (
     <>
-      <div className="relative w-full h-full" onContextMenu={handleContextMenu}>
+      <div
+        className="relative w-full h-full"
+        onContextMenu={handleContextMenu}
+        onClick={handleAvatarDirection}
+      >
         {message && !muteUsers.includes(userId) ? (
           <div className="w-0 absolute">
             <span className="bubble">{message}</span>
@@ -95,7 +108,7 @@ const UserCharacter = ({
               {userName}
             </li>
             <li
-              className="mt-2 text-gray-500 hover:text-gray-700 text-xs font-bold cursor-pointer"
+              className="mt-2 text-gray-500 hover:text-gray-700 text-xs font-semibold cursor-pointer"
               onClick={hdlTargetSelection}
             >
               Message
@@ -107,7 +120,7 @@ const UserCharacter = ({
               Kick
             </li> */}
             <li
-              className="mt-2 text-gray-500 hover:text-gray-700 text-xs font-bold cursor-pointer"
+              className="mt-2 text-gray-500 hover:text-gray-700 text-xs font-semibold cursor-pointer"
               onClick={hdlMuteUser}
             >
               {muteUsers.includes(userId) ? "Unmute" : "Mute"}

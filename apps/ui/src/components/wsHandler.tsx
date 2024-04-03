@@ -3,7 +3,7 @@ import io from "socket.io-client";
 import { useDispatch } from "react-redux";
 
 // types
-import { MessageT } from "../types";
+import { MessageT, CoordinatesT } from "../types";
 
 import {
   setGridSize,
@@ -16,6 +16,10 @@ import { useEffect } from "react";
 export const socket = io(import.meta.env.VITE_SERVER_URL, {
   transports: ["websocket"],
 });
+
+export const updatePlayerDirection = (dest: CoordinatesT) => {
+  socket.emit("updatePlayerDirection", dest);
+};
 
 export const createUser = (data: {
   roomName: string;

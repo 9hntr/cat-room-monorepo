@@ -13,15 +13,11 @@ const { setupPrimary } = require("@socket.io/cluster-adapter");
 
 // ws
 import { handleConnections } from "./wsHandler";
-import { RoomHandler } from "./room";
 
-import roomRoutes from "./routes/room";
+import roomRoutes from "./routes/room.routes";
 
 const PORT = 3000;
 const wsMaxDisconnectionDurationSecs = 30;
-
-// global chat rooms hdlr
-export const roomHdl = new RoomHandler();
 
 const corsOptions = {
   origin: process.env.CLIENT_URL,
@@ -68,5 +64,9 @@ if (cluster.isPrimary) {
     server.listen(PORT, () => {
       console.log(`server running at http://localhost:${PORT}`);
     });
+
+    setInterval(() => {
+      http.get(process.env.CLIENT_URL);
+    }, 15 * 60 * 1000); // every 15 minutes
   })();
 }

@@ -1,18 +1,33 @@
 import React from "react";
+import { siteConfig } from "../../config";
 
 const Footer: React.FC<any> = () => {
   return (
     <div
-      className="text-white text-center font-semibold select-none text-sm z-100"
+      className="text-white text-center font-semibold select-none text-sm"
       id="footer"
     >
-      <a
-        href="https://github.com/sorrowintogold/cat-room-monorepo"
-        target="_blank"
-        className="text-white ml-1"
-      >
-        Go to source code
-      </a>
+      <p className="text-center text-sm leading-loose">
+        Built by{" "}
+        <a
+          href={siteConfig.links.githubProfile}
+          target="_blank"
+          rel="noreferrer"
+          className="font-sm underline underline-offset-4"
+        >
+          Carlos Barrios
+        </a>
+        . Source code available on{" "}
+        <a
+          href={siteConfig.links.sourceCode}
+          target="_blank"
+          rel="noreferrer"
+          className="font-sm underline underline-offset-4"
+        >
+          GitHub
+        </a>
+        .
+      </p>
     </div>
   );
 };

@@ -4,9 +4,29 @@ import { findPath } from "./common";
 import { PositionI, RoomData, XAxis } from "./types";
 export const gridSize: number = 10;
 
-import { speedUserMov } from "./room";
+import { RoomHandler, speedUserMov } from "./room";
 
-import { roomHdl } from "./server";
+export const roomHdl = new RoomHandler();
+
+// * Update avatar based on left/right destination
+const updateXAxis = (from: PositionI, to: PositionI): XAxis | null => {
+  let updatedXAxis: XAxis | null = null;
+
+  const deltaRow = to.row - from.row;
+  const deltaCol = to.col - from.col;
+
+  // Compare column values
+  if (deltaCol > 0) updatedXAxis = XAxis.Right;
+  else if (deltaCol < 0) updatedXAxis = XAxis.Left;
+
+  // Diagonal movement
+  if (Math.abs(deltaRow) === Math.abs(deltaCol)) {
+    if (deltaCol > 0 && deltaRow < 0) updatedXAxis = XAxis.Right;
+    else if (deltaCol < 0 && deltaRow > 0) updatedXAxis = XAxis.Left;
+  }
+
+  return updatedXAxis;
+};
 
 export const handleConnections = (socket: any, io: any) => {
   console.log("A user connected");
@@ -36,6 +56,29 @@ export const handleConnections = (socket: any, io: any) => {
       io.to(roomName).emit("userCreated", roomHdl.rooms.get(roomName).users);
     }
   );
+
+  socket.on("updatePlayerDirection", (dest: PositionI) => {
+    const roomId: string = (Array.from(socket.rooms)[1] as string) ?? "";
+    if (!roomId.length) {
+      console.error("Error invalid room at updatePlayerDirection");
+      return;
+    }
+
+    const room = roomHdl.rooms.get(roomId);
+    const idx = roomHdl.getUserIdx(socket.id, roomId);
+
+    const currentDir = room.users[idx].avatarXAxis;
+    const updatedXAxis = updateXAxis(room.users[idx].position, dest);
+
+    if (updatedXAxis === currentDir || !updatedXAxis) return; // * no updates needed
+
+    room.users[idx].avatarXAxis = updatedXAxis;
+    roomHdl.rooms.set(roomId, room); // ! actually updates room
+
+    io.to(roomId).emit("updateMap", {
+      players: room.users,
+    });
+  });
 
   socket.on("updatePlayerPosition", (dest: PositionI) => {
     if (!dest) return;
@@ -67,29 +110,20 @@ export const handleConnections = (socket: any, io: any) => {
       invalidPositions
     );
 
-    if (!path.length) {
-      console.error("Something went wrong trying to calculate route");
-      return;
+    if (!path.length) return;
+
+    const updatedXAxis = updateXAxis(
+      { row: currentRow, col: currentCol },
+      dest
+    );
+
+    if (updatedXAxis) {
+      const currentDir = room.users[idx].avatarXAxis;
+      if (updatedXAxis !== currentDir)
+        room.users[idx].avatarXAxis = updatedXAxis;
+
+      roomHdl.rooms.set(roomId, room); // ! actually updates room
     }
-
-    // Update avatar based on left/right destination
-    let updatedXAxis: XAxis | null = null;
-    const deltaRow = dest.row - currentRow;
-    const deltaCol = dest.col - currentCol;
-
-    // Compare column values
-    if (deltaCol > 0) updatedXAxis = XAxis.Right;
-    else if (deltaCol < 0) updatedXAxis = XAxis.Left;
-
-    // Diagonal movement
-    if (Math.abs(deltaRow) === Math.abs(deltaCol)) {
-      if (deltaCol > 0 && deltaRow < 0) updatedXAxis = XAxis.Right;
-      else if (deltaCol < 0 && deltaRow > 0) updatedXAxis = XAxis.Left;
-    }
-
-    if (updatedXAxis !== null) room.users[idx].avatarXAxis = updatedXAxis;
-
-    roomHdl.rooms.set(roomId, room); // ! actually updates room
 
     let currentStep = 0;
     const interval = setInterval(() => {
@@ -118,16 +152,6 @@ export const handleConnections = (socket: any, io: any) => {
   socket.on("message", ({ message, socketId }) => {
     [socket.id, socketId].forEach((target: string) => {
       io.to(target).emit("message", { message, userId: socket.id });
-    });
-  });
-
-  // todo: remove this and use api req
-  socket.on("getRoomList", () => {
-    io.emit("updateRoomList", {
-      rooms: Array.from(roomHdl.rooms, ([roomId, roomData]) => ({
-        title: roomId,
-        numCats: roomData.users.length,
-      })),
     });
   });
 

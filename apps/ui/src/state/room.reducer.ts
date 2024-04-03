@@ -4,6 +4,7 @@ import { RootState } from "../store";
 
 // types
 import { PlayerI } from "../types";
+import { useSelector } from "react-redux";
 
 type UserMessageI = {
   userId: string;
@@ -90,5 +91,13 @@ export const selectUser = (state: RootState) => state.room.currentUserData;
 export const selectTarget = (state: RootState) => state.room.target;
 export const selectMuteUsers = (state: RootState) => state.room.muteUsers;
 export const selectRooms = (state: RootState) => state.room.rooms;
+
+export const selectUserById = (userId: string) => {
+  const user = useSelector((state: RootState) =>
+    state.room.usersData.find((user) => user.userId === userId)
+  );
+
+  return user;
+};
 
 export default userSlice.reducer;
