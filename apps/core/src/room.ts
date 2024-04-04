@@ -4,6 +4,7 @@ import cron from "node-cron";
 import { getRandomSecondBetween, findPath } from "./common";
 
 import { avatars } from "./data";
+import { Server, Socket } from "socket.io";
 
 const tasks = new Map<string, any>();
 export const speedUserMov: number = 220;
@@ -55,51 +56,27 @@ export class RoomHandler {
     return updatedXAxis;
   };
 
-  setRandomPosition = (roomId: string): void => {
-    const room = this.rooms.get(roomId);
-    const userIdx = room.userIdxMap.get(chatbotName);
-
-    // Remove current position from usersPositions
-    room.usersPositions.delete(
-      String([
-        room.users[userIdx].position.row,
-        room.users[userIdx].position.col,
-      ])
-    );
-    this.rooms.set(roomId, room);
-
-    let newPosition: number[] = [];
+  getRandomPosition(room: RoomData): number[] {
+    let position: number[] = [];
 
     for (;;) {
-      newPosition = [
+      position = [
         Math.floor(Math.random() * gridSize),
         Math.floor(Math.random() * gridSize),
       ];
 
-      if (!room.usersPositions.has(String(newPosition))) break;
+      if (!room.usersPositions.has(String(position))) break;
     }
 
-    const updatedXAxis = this.updateXAxis(room.users[userIdx].position, {
-      row: newPosition[0],
-      col: newPosition[1],
-    });
-
-    if (updatedXAxis && updatedXAxis !== room.users[userIdx].avatarXAxis) {
-      room.users[userIdx].avatarXAxis = updatedXAxis;
-    }
-
-    room.users[userIdx].position = { row: newPosition[0], col: newPosition[1] };
-    room.usersPositions.add(String(newPosition));
-    this.rooms.set(roomId, room);
-
-    return;
-  };
+    return position;
+  }
 
   createUser(
     userId: string,
     roomId: string,
     userName: string,
-    avatarId: number
+    avatarId: number,
+    io: Server
   ): void {
     const roomData = this.rooms.get(roomId);
     let newPosition = [0, 0]; // initial position if no players in the room
@@ -125,15 +102,7 @@ export class RoomHandler {
       newRoomData.usersPositions.add(String(newPosition));
 
       // create chatbot on room init
-      let chatbotPosition = [];
-      for (;;) {
-        chatbotPosition = [
-          Math.floor(Math.random() * gridSize),
-          Math.floor(Math.random() * gridSize),
-        ];
-
-        if (String(chatbotPosition) !== String(newPosition)) break;
-      }
+      let chatbotPosition = this.getRandomPosition(newRoomData);
 
       const chatBot = {
         userName: chatbotName,
@@ -150,50 +119,47 @@ export class RoomHandler {
 
       this.rooms.set(roomId, newRoomData);
 
-      // ! create cron job for isabella movement
       const newTask = cron.schedule(
-        `*/${getRandomSecondBetween(10)} * * * * *`,
-        () => this.setRandomPosition(roomId)
+        `*/${getRandomSecondBetween(20, 10)} * * * * *`,
+        () => {
+          // ? esto puede dar problemas con los puestos ocupados
+          const pos = this.getRandomPosition(this.rooms.get(roomId));
+
+          this.updatePosition(
+            { row: pos[0], col: pos[1] },
+            roomId,
+            chatbotName,
+            io
+          );
+        }
       );
 
       tasks.set(roomId, newTask);
-    } else {
-      let newPosition = [];
 
-      for (;;) {
-        newPosition = [
-          Math.floor(Math.random() * gridSize),
-          Math.floor(Math.random() * gridSize),
-        ];
-
-        let foundPosition = roomData
-          ? roomData.usersPositions.has(String(newPosition))
-          : false;
-        if (!foundPosition) break;
-      }
-
-      newUser = {
-        ...newUser,
-        position: { row: newPosition[0], col: newPosition[1] },
-      };
-
-      roomData.users.push(newUser);
-      roomData.userIdxMap.set(userId, roomData.users.length - 1);
-      roomData.usersPositions.add(String(newPosition));
-
-      this.rooms.set(roomId, roomData);
-    }
-  }
-
-  updatePosition(dest: PositionI, socket: any, io: any): void {
-    const roomId: string = (Array.from(socket.rooms)[1] as string) ?? "";
-    if (!roomId.length) {
-      console.error("Error invalid room at updatePlayerPosition");
       return;
     }
 
+    newPosition = this.getRandomPosition(roomData);
+    newUser = {
+      ...newUser,
+      position: { row: newPosition[0], col: newPosition[1] },
+    };
+
+    roomData.users.push(newUser);
+    roomData.userIdxMap.set(userId, roomData.users.length - 1);
+    roomData.usersPositions.add(String(newPosition));
+
+    this.rooms.set(roomId, roomData);
+  }
+
+  updatePosition(
+    dest: PositionI,
+    roomId: string,
+    socketId: string,
+    io: Server
+  ): void {
     const room = this.rooms.get(roomId);
-    const idx = this.getUserIdx(socket.id, roomId);
+    const idx = this.getUserIdx(socketId, roomId);
     const { row: currentRow, col: currentCol } = room.users[idx].position;
 
     // Remove current position from usersPositions
@@ -260,13 +226,14 @@ export class RoomHandler {
     if (typeof idx === "undefined") return;
 
     // Delete room and stop task once the last user is gone
-    const roomOnlineUsers: number = roomData.users?.length - 1;
-    if (roomOnlineUsers === 0) {
-      this.rooms.delete(roomId);
-      tasks[roomId].stop();
-      delete tasks[roomId];
+    const roomOnlineUsers: number = roomData.users?.length;
 
-      console.log("tasks", tasks);
+    // User just disconnected + isa
+    if (roomOnlineUsers === 2) {
+      this.rooms.delete(roomId);
+
+      tasks.get(roomId)?.stop(); // ! void func, make sure its actually stopped
+      tasks.delete(roomId);
 
       return;
     }

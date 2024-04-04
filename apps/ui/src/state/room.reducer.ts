@@ -19,23 +19,25 @@ type Target = {
 // Define a type for the slice state
 interface UsersState {
   gridSize: number;
-  currentUserData: PlayerI | null;
+  userId: string | null;
   usersData: PlayerI[];
   rooms: any[];
   messages: any;
   target: Target;
   muteUsers: string[];
+  roomId: string;
 }
 
 // Define the initial state using that type
 const initialState: UsersState = {
   gridSize: 10,
-  currentUserData: null,
+  userId: null,
   usersData: [],
   rooms: [],
   target: { username: null, id: "" },
   messages: {},
   muteUsers: [],
+  roomId: "",
 };
 
 export const userSlice = createSlice({
@@ -44,6 +46,12 @@ export const userSlice = createSlice({
   reducers: {
     setGridSize: (state, action: PayloadAction<number>) => {
       state.gridSize = action.payload;
+    },
+    setUserId: (state, action: PayloadAction<string>) => {
+      state.userId = action.payload;
+    },
+    setRoomId: (state, action: PayloadAction<string>) => {
+      state.roomId = action.payload;
     },
     setUsers: (state, action: PayloadAction<PlayerI[]>) => {
       state.usersData = action.payload;
@@ -57,7 +65,11 @@ export const userSlice = createSlice({
       state.rooms = action.payload;
     },
     setTarget: (state, action: PayloadAction<any>) => {
-      state.target = action.payload;
+      const { username, id } = action.payload;
+      state.target.username = username;
+      state.target.id = id;
+
+      console.log("state from room.reducer", state.target);
     },
     addMessage: (state, action: PayloadAction<UserMessageI>) => {
       const { userId, message } = action.payload;
@@ -80,17 +92,20 @@ export const {
   removeUserById,
   setRooms,
   setTarget,
+  setRoomId,
   muteUnmuteUser,
+  setUserId,
   addMessage,
   userCleanMessage,
 } = userSlice.actions;
 
 export const selectPlayers = (state: RootState) => state.room.usersData;
 export const selectGridSize = (state: RootState) => state.room.gridSize;
-export const selectUser = (state: RootState) => state.room.currentUserData;
 export const selectTarget = (state: RootState) => state.room.target;
 export const selectMuteUsers = (state: RootState) => state.room.muteUsers;
 export const selectRooms = (state: RootState) => state.room.rooms;
+export const selectUserId = (state: RootState) => state.room.userId;
+export const selectRoomsId = (state: RootState) => state.room.roomId;
 
 export const selectUserById = (userId: string) => {
   const user = useSelector((state: RootState) =>

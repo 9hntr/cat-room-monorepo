@@ -7,6 +7,6 @@ export const sleep = (ms: number): Promise<void> => {
   });
 };
 
-export const getRandomSecondBetween = (s: number): number => {
-  return Math.floor(Math.random() * s) + 1;
+export const getRandomSecondBetween = (s: number, y: number): number => {
+  return Math.floor(Math.random() * s) + y;
 };

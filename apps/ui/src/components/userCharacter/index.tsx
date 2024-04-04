@@ -7,7 +7,6 @@ import {
   selectMuteUsers,
   muteUnmuteUser,
   selectUserById,
-  selectUser,
 } from "../../state/room.reducer";
 import { useClickAway } from "../../common/hooks";
 import { socket, updatePlayerDirection } from "../wsHandler";
@@ -25,7 +24,6 @@ const UserCharacter = ({
 }) => {
   const dispatch = useDispatch();
   const contextMenuRef = useRef(null);
-  const currentUser = useSelector(selectUser);
   const user = selectUserById(userId);
   const muteUsers = useSelector(selectMuteUsers);
   const message = useSelector((state: any) => state.room.messages[userId]);
@@ -75,8 +73,7 @@ const UserCharacter = ({
   };
 
   const handleAvatarDirection = () => {
-    if (user && userId !== currentUser?.userId)
-      updatePlayerDirection(user.position);
+    if (user) updatePlayerDirection(user.position);
   };
 
   useClickAway(contextMenuRef, closeContextMenu);
@@ -90,7 +87,7 @@ const UserCharacter = ({
       >
         {message && !muteUsers.includes(userId) ? (
           <div className="w-0 absolute mt-[-135px] ml-[-20px] z-20">
-            <span className="bubble min-w-[4em]">{message}</span>
+            <span className="bubble min-w-[2.5em]">{message}</span>
           </div>
         ) : null}
         <img

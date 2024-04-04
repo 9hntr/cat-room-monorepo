@@ -3,11 +3,17 @@ import { PositionI, RoomData } from "./types";
 export const gridSize: number = 10;
 
 import { RoomHandler } from "./room";
+import { chatbotName } from "./config";
+import { getResponse } from "./common/chatbot.common";
 
-export const roomHdl = new RoomHandler();
+export let roomHdl: RoomHandler = new RoomHandler();
 
 export const handleConnections = (socket: any, io: any) => {
   console.log("A user connected");
+
+  for (let room of roomHdl.rooms) {
+    console.log(room);
+  }
 
   socket.on(
     "userCreation",
@@ -27,8 +33,7 @@ export const handleConnections = (socket: any, io: any) => {
         return;
       }
 
-      // todo: movamos la logica de los otros listeners a room y dejemoslo asi
-      roomHdl.createUser(socket.id, roomName, userName, avatarId);
+      roomHdl.createUser(socket.id, roomName, userName, avatarId, io);
 
       socket.join(roomName);
       io.to(roomName).emit("initMap", { gridSize });
@@ -62,10 +67,31 @@ export const handleConnections = (socket: any, io: any) => {
   socket.on("updatePlayerPosition", (dest: PositionI) => {
     if (!dest) return;
 
-    roomHdl.updatePosition(dest, socket, io);
+    const roomId: string = (Array.from(socket.rooms)[1] as string) ?? "";
+    if (!roomId.length) {
+      console.error("Error invalid room at updatePlayerPosition");
+      return;
+    }
+
+    roomHdl.updatePosition(dest, roomId, socket.id, io);
   });
 
-  socket.on("message", ({ message, socketId }) => {
+  socket.on("message", async ({ message, socketId }) => {
+    if (socketId === chatbotName) {
+      io.to(socket.id).emit("message", {
+        message,
+        userId: socket.id,
+      });
+
+      const response: string = await getResponse(message);
+      io.to(socket.id).emit("message", {
+        message: response,
+        userId: chatbotName,
+      });
+
+      return;
+    }
+
     [socket.id, socketId].forEach((target: string) => {
       io.to(target).emit("message", { message, userId: socket.id });
     });

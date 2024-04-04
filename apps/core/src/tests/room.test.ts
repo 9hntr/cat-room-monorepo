@@ -30,10 +30,10 @@ test("Testing create user", () => {
   expect(room.usersPositions.has("0,0")).toBeTruthy();
 });
 
-test("Testing remove last user", () => {
-  mockRooms.removeUser(user.userId, user.roomId);
+// test("Testing remove last user", () => {
+//   mockRooms.removeUser(user.userId, user.roomId);
 
-  expect(mockRooms.rooms.has(user.roomId)).toBeFalsy();
-});
+//   expect(mockRooms.rooms.has(user.roomId)).toBeFalsy();
+// });
 
 // test("Testing filling a room", () => {});

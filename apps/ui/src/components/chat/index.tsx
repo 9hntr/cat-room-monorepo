@@ -1,7 +1,13 @@
-import React, { createRef, useState } from "react";
+import React, { createRef, useEffect, useState } from "react";
 import { sendMessageTo } from "../wsHandler";
 import { useDispatch, useSelector } from "react-redux";
-import { selectTarget, selectUser, setTarget } from "../../state/room.reducer";
+import {
+  selectTarget,
+  selectUserById,
+  selectUserId,
+  setTarget,
+  selectRoomsId,
+} from "../../state/room.reducer";
 
 export const inputChatMessage = createRef<any>();
 
@@ -9,11 +15,15 @@ const Chat: React.FC<any> = () => {
   const dispatch = useDispatch();
   const [message, setMessage] = useState<string>("");
   const target = useSelector(selectTarget);
-  const user = useSelector(selectUser);
+  const userId = useSelector(selectUserId);
+  const user = selectUserById(userId as string);
+  const roomId = useSelector(selectRoomsId);
 
   const sendMessage = (event: any) => {
     event.preventDefault();
     if (!message) return;
+
+    console.log("target", target);
 
     sendMessageTo(message, target?.id as string);
     setMessage("");
@@ -21,11 +31,17 @@ const Chat: React.FC<any> = () => {
 
   const hdlKeyDown = (key: string) => {
     if (!message.length && key === "Backspace") {
-      dispatch(setTarget({ username: null, id: user?.roomId }));
+      console.log("hdlKeyDown - user* ", user);
+      dispatch(setTarget({ username: null, id: roomId }));
+
       // @ts-ignore
       inputChatMessage.current.focus();
     }
   };
+
+  useEffect(() => {
+    console.log("target updated:", target);
+  }, [target]);
 
   return (
     <React.Fragment>

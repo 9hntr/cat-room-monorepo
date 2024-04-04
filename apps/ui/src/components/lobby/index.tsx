@@ -3,7 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { createUser } from "../wsHandler";
 import { fetchRooms } from "../../api-hooks";
 
-import { setTarget, selectRooms, setRooms } from "../../state/room.reducer";
+import {
+  setTarget,
+  selectRooms,
+  setRooms,
+  setRoomId,
+} from "../../state/room.reducer";
 
 const Lobby = ({ isOpen, onClose }: { isOpen: boolean; onClose: any }) => {
   const dispatch = useDispatch();
@@ -28,6 +33,7 @@ const Lobby = ({ isOpen, onClose }: { isOpen: boolean; onClose: any }) => {
   const handleSelectRoom = (rId: string) => {
     dispatch(setTarget({ username: null, id: rId }));
     setRoomName(rId);
+    dispatch(setRoomId(rId));
     setStep(2);
   };
 

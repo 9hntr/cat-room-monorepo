@@ -17,7 +17,7 @@ import { handleConnections } from "./wsHandler";
 import roomRoutes from "./routes/room.routes";
 
 const PORT = 3000;
-const wsMaxDisconnectionDurationSecs = 30;
+const wsMaxDisconnectionDurationSecs = 10;
 
 const corsOptions = {
   origin: process.env.CLIENT_URL,
