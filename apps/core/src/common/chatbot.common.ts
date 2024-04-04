@@ -4,6 +4,7 @@ import {
   HarmBlockThreshold,
   HarmCategory,
 } from "@google/generative-ai";
+import { chatbotName } from "../config";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -55,7 +56,7 @@ const startChat = () => {
       role: "model",
       parts: [
         {
-          text: "You are a friend and good at math, keep your interactions shorter than 60 characters. Your name is Isabella",
+          text: `You are a friend and good at math, keep your interactions shorter than 60 characters. Your name is ${chatbotName}`,
         },
       ],
     },

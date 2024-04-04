@@ -3,10 +3,7 @@ import { siteConfig } from "../../config";
 
 const Footer: React.FC<any> = () => {
   return (
-    <div
-      className="text-white text-center font-semibold select-none text-sm"
-      id="footer"
-    >
+    <footer className="text-white text-center font-semibold select-none text-sm">
       <p className="text-center text-sm leading-loose">
         Built by{" "}
         <a
@@ -28,7 +25,7 @@ const Footer: React.FC<any> = () => {
         </a>
         .
       </p>
-    </div>
+    </footer>
   );
 };
 

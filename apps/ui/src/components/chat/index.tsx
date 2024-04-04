@@ -48,6 +48,7 @@ const Chat: React.FC<any> = () => {
 
           <input
             type="text"
+            data-testid="chat-input"
             ref={inputChatMessage}
             autoFocus
             placeholder="Type your message..."
@@ -59,6 +60,7 @@ const Chat: React.FC<any> = () => {
           />
           <button
             type="submit"
+            data-testid="chat-submit-btn"
             className="flex items-center justify-center rounded-lg px-4 py-1 text-aldebaran font-bold"
           >
             Send

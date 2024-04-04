@@ -106,6 +106,7 @@ const Lobby = ({ isOpen, onClose }: { isOpen: boolean; onClose: any }) => {
               value={roomName}
             />
             <button
+              data-testid="create-room-btn"
               className="px-4 py-2 flex-shrink-0 bg-aldebaran text-white"
               onClick={() => handleSelectRoom(roomName)}
             >
@@ -130,6 +131,7 @@ const Lobby = ({ isOpen, onClose }: { isOpen: boolean; onClose: any }) => {
               onChange={({ target }) => setUsername(target.value)}
             />
             <button
+              data-testid="join-room-btn"
               className="px-4 py-2 flex-shrink-0 bg-aldebaran text-white"
               onClick={() => handleSelectRoom(roomName)}
             >

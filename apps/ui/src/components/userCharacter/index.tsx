@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -79,15 +79,21 @@ const UserCharacter = ({
   useClickAway(contextMenuRef, closeContextMenu);
 
   return (
-    <>
+    <Fragment>
       <div
+        data-testid={`user-character-${userId}`}
         className="flex items-center justify-center relative w-full h-full"
         onContextMenu={handleContextMenu}
         onClick={handleAvatarDirection}
       >
         {message && !muteUsers.includes(userId) ? (
           <div className="w-0 absolute mt-[-135px] ml-[-20px] z-20">
-            <span className="bubble min-w-[2.5em]">{message}</span>
+            <span
+              data-testid="chat-message-placeholder"
+              className="bubble min-w-[2.5em]"
+            >
+              {message}
+            </span>
           </div>
         ) : null}
         <img
@@ -111,6 +117,7 @@ const UserCharacter = ({
               {userName}
             </li>
             <li
+              data-testid="chat-private-message"
               className="mt-2 text-gray-500 hover:text-gray-700 text-xs font-semibold cursor-pointer"
               onClick={hdlTargetSelection}
             >
@@ -131,7 +138,7 @@ const UserCharacter = ({
           </ul>
         </div>
       ) : null}
-    </>
+    </Fragment>
   );
 };
 
