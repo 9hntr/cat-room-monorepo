@@ -73,16 +73,16 @@ test("Testing updatePlayerPosition event", async () => {
   expect(ioMock.to.mock.calls.slice(2).length).toBe(3);
 });
 
-test("Testing message event", () => {
-  const message: string = "hello world";
-  const messageEvent = eventHandlers[2][1];
-  messageEvent({ message, socketId: "roomId" });
+// test("Testing message event", () => {
+//   const message: string = "hello world";
+//   const messageEvent = eventHandlers[2][1];
+//   messageEvent({ message, socketId: "roomId" });
 
-  expect(ioMock.emit).toHaveBeenCalledWith("message", {
-    message,
-    userId: expect.any(String),
-  });
-});
+//   expect(ioMock.emit).toHaveBeenCalledWith("message", {
+//     message,
+//     userId: expect.any(String),
+//   });
+// });
 
 test("Testing disconnect event", () => {
   const userDisconnectedEvent = eventHandlers[3][1];

@@ -92,7 +92,7 @@ const UserCharacter = ({
         ) : null}
         <img
           src={avatar}
-          className="flex justify-center items-center mb-[50%] w-[40px] absolute"
+          className="flex justify-center items-center mb-[50%] w-[40px] absolute border-transparent select-none"
         />
         <span className="text-xs text-white font-custom absolute mt-[32px] select-none">
           {userName}

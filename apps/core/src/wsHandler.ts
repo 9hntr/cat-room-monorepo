@@ -11,10 +11,6 @@ export let roomHdl: RoomHandler = new RoomHandler();
 export const handleConnections = (socket: any, io: any) => {
   console.log("A user connected");
 
-  for (let room of roomHdl.rooms) {
-    console.log(room);
-  }
-
   socket.on(
     "userCreation",
     ({

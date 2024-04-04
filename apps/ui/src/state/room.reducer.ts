@@ -68,8 +68,6 @@ export const userSlice = createSlice({
       const { username, id } = action.payload;
       state.target.username = username;
       state.target.id = id;
-
-      console.log("state from room.reducer", state.target);
     },
     addMessage: (state, action: PayloadAction<UserMessageI>) => {
       const { userId, message } = action.payload;

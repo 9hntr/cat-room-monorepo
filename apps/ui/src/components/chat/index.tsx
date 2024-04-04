@@ -23,25 +23,18 @@ const Chat: React.FC<any> = () => {
     event.preventDefault();
     if (!message) return;
 
-    console.log("target", target);
-
     sendMessageTo(message, target?.id as string);
     setMessage("");
   };
 
   const hdlKeyDown = (key: string) => {
     if (!message.length && key === "Backspace") {
-      console.log("hdlKeyDown - user* ", user);
       dispatch(setTarget({ username: null, id: roomId }));
 
       // @ts-ignore
       inputChatMessage.current.focus();
     }
   };
-
-  useEffect(() => {
-    console.log("target updated:", target);
-  }, [target]);
 
   return (
     <React.Fragment>

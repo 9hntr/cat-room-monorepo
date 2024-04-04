@@ -4,7 +4,7 @@ import cron from "node-cron";
 import { getRandomSecondBetween, findPath } from "./common";
 
 import { avatars } from "./data";
-import { Server, Socket } from "socket.io";
+import { Server } from "socket.io";
 
 const tasks = new Map<string, any>();
 export const speedUserMov: number = 220;

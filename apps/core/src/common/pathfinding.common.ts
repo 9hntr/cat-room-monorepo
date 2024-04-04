@@ -40,7 +40,6 @@ export const findPath = (
 
     for (const pos of invalidPositions) {
       if (pos[0] === row && pos[1] === col) {
-        // console.log("invalid cell position");
         return false;
       }
     }
