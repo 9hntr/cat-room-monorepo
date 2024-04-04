@@ -1,6 +1,6 @@
 import io from "socket.io-client";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 // types
 import { MessageT, CoordinatesT } from "../types";
@@ -10,6 +10,7 @@ import {
   setUsers,
   removeUserById,
   addMessage,
+  selectUserId,
 } from "../state/room.reducer";
 import { useEffect } from "react";
 
@@ -38,6 +39,7 @@ export const updatePlayerPosition = (data: { row: number; col: number }) =>
 
 const SocketHandler = () => {
   const dispatch = useDispatch();
+  const currentUserI = useSelector(selectUserId);
 
   useEffect(() => {
     socket.on("initMap", (data) => {
@@ -49,6 +51,7 @@ const SocketHandler = () => {
     });
 
     socket.on("userDisconnected", (userId) => {
+      if (userId === currentUserI) window.location.reload();
       dispatch(removeUserById(userId));
     });
 

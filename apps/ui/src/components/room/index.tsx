@@ -55,7 +55,7 @@ const Room: React.FC<any> = () => {
           >
             {player && (
               <UserCharacter
-                avatar={(player?.avatar[player?.avatarXAxis] as string) ?? ""}
+                avatar={player?.avatar[player?.avatarXAxis]}
                 userId={player.userId}
                 userName={player.userName}
               />

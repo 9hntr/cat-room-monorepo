@@ -138,12 +138,11 @@ const Lobby = ({ isOpen, onClose }: { isOpen: boolean; onClose: any }) => {
           </form>
           <div className="flex items-center justify-center">
             {buttons.map((button, idx: number) => {
-              const baseClass: string =
-                "flex items-center justify-center rounded-md p-2 ml-1 border-2";
-              const className: string =
+              const className: string = `flex items-center justify-center rounded-md p-2 ml-1 border-2 ${
                 buttons[idx].id === avatarId
-                  ? baseClass + " border-blue-300"
-                  : baseClass + " border-gray-200";
+                  ? "border-blue-300"
+                  : "border-gray-200"
+              }`;
 
               return (
                 <button
