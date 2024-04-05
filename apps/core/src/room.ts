@@ -1,7 +1,7 @@
 import { RoomData, XAxis, PositionI } from "./types";
 import { chatbotName } from "./config";
 import cron from "node-cron";
-import { getRandomSecondBetween, findPath } from "./common";
+import { getRandomSecondBetween, findPath } from "./lib";
 
 import { avatars } from "./data";
 import { Server } from "socket.io";

@@ -1,4 +1,4 @@
-import React, { createRef, useEffect, useState } from "react";
+import React, { createRef, useState } from "react";
 import { sendMessageTo } from "../wsHandler";
 import { useDispatch, useSelector } from "react-redux";
 import {

@@ -4,7 +4,7 @@ export const gridSize: number = 10;
 
 import { RoomHandler } from "./room";
 import { chatbotName } from "./config";
-import { getResponse } from "./common/chatbot.common";
+import { getResponse } from "./lib/chatbot.lib";
 
 export let roomHdl: RoomHandler = new RoomHandler();
 

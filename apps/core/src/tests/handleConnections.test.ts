@@ -2,7 +2,7 @@ import { handleConnections, gridSize } from "../wsHandler";
 import { speedUserMov } from "../room";
 
 import { XAxis } from "../types";
-import { sleep } from "../common";
+import { sleep } from "../lib";
 import { avatars } from "../data";
 
 const socketMock = {

@@ -1,5 +1,5 @@
-export { findPath } from "./pathfinding.common";
-export { getResponse } from "./chatbot.common";
+export { findPath } from "./pathfinding.lib";
+export { getResponse } from "./chatbot.lib";
 
 export const sleep = (ms: number): Promise<void> => {
   return new Promise((resolve) => {

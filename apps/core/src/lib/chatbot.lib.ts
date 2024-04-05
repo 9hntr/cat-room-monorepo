@@ -76,7 +76,7 @@ export const getResponse = async (prompt: string): Promise<string> => {
 
     return response?.text();
   } catch (err) {
-    console.error(err);
+    // console.error(err);
 
     startChat();
 
