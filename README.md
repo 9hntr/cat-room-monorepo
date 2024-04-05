@@ -2,7 +2,7 @@
 
 Live preview https://cat-room-ui.vercel.app/
 
-![](https://raw.githubusercontent.com/sorrowintogold/cat-room-monorepo/main/apps/ui/public/ezgif-5-86ea25567c.gif)
+![](https://raw.githubusercontent.com/sorrowintogold/cat-room-monorepo/main/apps/ui/public/demo.gif)
 
 Run development
 
