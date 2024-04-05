@@ -2,7 +2,7 @@
 
 ### Overview
 
-This project is a web application for creating interactive real-time chat rooms with AI integrated.
+This project is a web application for creating interactive real-time chat rooms with AI chatbots using Google Gemini.
 
 #### Frontend technologies
 
