@@ -56,7 +56,7 @@ const Lobby = ({ isOpen, onClose }: { isOpen: boolean; onClose: any }) => {
 
   return (
     <div
-      className={`fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-opacity-50 ${
+      className={`fixed mb-[180px] top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-opacity-50 ${
         isOpen ? "" : "hidden"
       }`}
     >
