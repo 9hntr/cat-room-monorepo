@@ -19,7 +19,8 @@ const serverUrl = import.meta.env.VITE_SERVER_URL;
 export const socket = io(serverUrl, {
   transports: ["websocket"],
   extraHeaders: {
-    "Content-Security-Policy": `default-src 'self' ${serverUrl}`;
+    "Content-Security-Policy": `default-src 'self' ${serverUrl}`,
+  },
 });
 
 export const updatePlayerDirection = (dest: CoordinatesT) => {
