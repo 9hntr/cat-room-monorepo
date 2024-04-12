@@ -1,6 +1,6 @@
 export const siteConfig = {
   links: {
-    githubProfile: "https://github.com/sorrowintogold",
-    sourceCode: "https://github.com/sorrowintogold/cat-room-monorepo",
+    githubProfile: "https://github.com/kovltsx",
+    sourceCode: "https://github.com/kovltsx/cat-room-monorepo",
   },
 };
